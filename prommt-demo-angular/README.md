@@ -6,5 +6,5 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Inside root folder 
     - Run npm i
-    - Run ng serve --port 8081. Navigate to `http://localhost:4200/all`.
+    - Run ng serve --port 8081. Navigate to `http://localhost:8081/all`.
 
