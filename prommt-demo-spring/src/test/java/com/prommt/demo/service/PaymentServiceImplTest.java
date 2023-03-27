@@ -2,8 +2,10 @@ package com.prommt.demo.service;
 
 import com.prommt.demo.model.Currency;
 import com.prommt.demo.model.PaymentStatus;
+import com.prommt.demo.service.impl.PaymentServiceImpl;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -23,10 +25,10 @@ import com.prommt.demo.model.dto.PaymentMapper;
 import com.prommt.demo.repository.PaymentRepository;
 
 
-public class PaymentServiceTest {
+public class PaymentServiceImplTest {
 
     public static final String TEST_TEST_COM = "test@test.com";
-    private PaymentService paymentService;
+    private PaymentServiceImpl paymentServiceImpl;
     private PaymentDTO paymentDTO;
     @Mock
     private PaymentRepository paymentRepository;
@@ -38,12 +40,12 @@ public class PaymentServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        paymentService = new PaymentService(paymentRepository);
+        paymentServiceImpl = new PaymentServiceImpl(paymentRepository);
         paymentMapper = Mappers.getMapper(PaymentMapper.class);
 
         paymentDTO = new PaymentDTO();
         paymentDTO.setId(1L);
-        paymentDTO.setAmount(100);
+        paymentDTO.setAmount(BigDecimal.valueOf(100));
         paymentDTO.setCreatedDate(LocalDate.now());
         paymentDTO.setPayerEmail(TEST_TEST_COM);
         paymentDTO.setPaidDate(LocalDate.now());
@@ -60,7 +62,7 @@ public class PaymentServiceTest {
         when(paymentRepository.findAll()).thenReturn(payments);
 
         // when
-        List<Payment> result = paymentService.getAllPayments();
+        List<Payment> result = paymentServiceImpl.getAllPayments();
 
         // then
         verify(paymentRepository, times(1)).findAll();
@@ -76,7 +78,7 @@ public class PaymentServiceTest {
         when(paymentRepository.findById(1L)).thenReturn(Optional.of(payment));
 
         // when
-        Optional<Payment> result = paymentService.getPaymentById(1L);
+        Optional<Payment> result = paymentServiceImpl.getPaymentById(1L);
 
         // then
         verify(paymentRepository, times(1)).findById(1L);
@@ -89,7 +91,7 @@ public class PaymentServiceTest {
         // Given
 
         // When
-        paymentService.deletePayment(1L);
+        paymentServiceImpl.deletePayment(1L);
 
         // Then
         verify(paymentRepository, times(1)).deleteById(1L);
@@ -100,7 +102,7 @@ public class PaymentServiceTest {
         // Given
         Payment payment = new Payment();
         payment.setId(1L);
-        payment.setAmount(100);
+        payment.setAmount(BigDecimal.valueOf(100));
         payment.setCreatedDate(LocalDate.now());
         payment.setPayerEmail(TEST_TEST_COM);
         payment.setPaidDate(LocalDate.now());
@@ -110,7 +112,7 @@ public class PaymentServiceTest {
         when(paymentRepository.save(payment)).thenReturn(payment);
 
         // When
-        Optional<Payment> result = paymentService.updatePayment(1L, payment);
+        Optional<Payment> result = paymentServiceImpl.updatePayment(1L, payment);
 
         // Then
         assertTrue(result.isPresent());
@@ -128,7 +130,7 @@ public class PaymentServiceTest {
         when(paymentRepository.findById(2L)).thenReturn(Optional.empty());
 
         // When
-        Optional<Payment> result = paymentService.updatePayment(2L, payment);
+        Optional<Payment> result = paymentServiceImpl.updatePayment(2L, payment);
 
         // Then
         assertFalse(result.isPresent());
@@ -141,7 +143,7 @@ public class PaymentServiceTest {
         // Given
         Payment payment = new Payment();
         payment.setId(2L);
-        payment.setAmount(100);
+        payment.setAmount(BigDecimal.valueOf(100));
         payment.setCreatedDate(LocalDate.now());
         payment.setPayerEmail(TEST_TEST_COM);
         payment.setPaidDate(LocalDate.now());
@@ -151,7 +153,7 @@ public class PaymentServiceTest {
         when(paymentRepository.save(payment)).thenReturn(payment);
 
         // When
-        Optional<Payment> result = paymentService.createPayment(payment);
+        Optional<Payment> result = paymentServiceImpl.createPayment(payment);
 
         // Then
         assertTrue(result.isPresent());
@@ -169,7 +171,7 @@ public class PaymentServiceTest {
         when(paymentRepository.findById(2L)).thenReturn(Optional.of(payment));
 
         // When
-        Optional<Payment> result = paymentService.createPayment(payment);
+        Optional<Payment> result = paymentServiceImpl.createPayment(payment);
 
         // Then
         assertFalse(result.isPresent());
@@ -180,7 +182,7 @@ public class PaymentServiceTest {
     @Test
     void testPaymentToPaymentDTO() {
         when(payment.getId()).thenReturn(1L);
-        when(payment.getAmount()).thenReturn(100);
+        when(payment.getAmount()).thenReturn(BigDecimal.valueOf(100));
         when(payment.getCreatedDate()).thenReturn(LocalDate.now());
         when(payment.getPayerEmail()).thenReturn(TEST_TEST_COM);
         when(payment.getPaidDate()).thenReturn(LocalDate.now());

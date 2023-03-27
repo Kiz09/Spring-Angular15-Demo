@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +45,7 @@ class IntegrationTest {
     @BeforeEach
     void setUp() {
         paymentDTO = new PaymentDTO();
-        paymentDTO.setAmount(100);
+        paymentDTO.setAmount(BigDecimal.valueOf(100));
         paymentDTO.setCurrency(Currency.USD);
         paymentDTO.setPayerEmail(TEST_TEST_COM);
         paymentDTO.setCreatedDate(LocalDate.now().plusDays(2));
@@ -60,7 +61,7 @@ class IntegrationTest {
     void getPaymentById_ShouldReturnOk() throws Exception {
 
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/"+1L))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/payments/"+1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
@@ -75,7 +76,7 @@ class IntegrationTest {
 
         String content = objectMapper.writeValueAsString(paymentDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/")
+        mockMvc.perform(MockMvcRequestBuilders.post("/payments/")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

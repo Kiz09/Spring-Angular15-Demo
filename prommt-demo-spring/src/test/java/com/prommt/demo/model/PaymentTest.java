@@ -2,6 +2,7 @@ package com.prommt.demo.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,7 +59,7 @@ class PaymentTest {
     @Test
     public void testSetAndGetAmount() {
         Payment payment = new Payment();
-        int amount = 100;
+        BigDecimal amount = BigDecimal.valueOf(100);
         payment.setAmount(amount);
         assertEquals(amount, payment.getAmount());
     }

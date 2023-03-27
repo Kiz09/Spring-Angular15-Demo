@@ -4,6 +4,7 @@ import com.prommt.demo.model.Currency;
 import com.prommt.demo.model.PaymentStatus;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -14,7 +15,7 @@ public class PaymentDTO {
     private String payerEmail;
     private PaymentStatus status;
     private Currency currency;
-    private int amount;
+    private BigDecimal amount;
     private LocalDate paidDate;
 
 }

@@ -5,6 +5,7 @@ import com.prommt.demo.model.Payment;
 import com.prommt.demo.model.PaymentStatus;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,14 +26,14 @@ class PaymentDTOTest {
         PaymentDTO paymentDTO = new PaymentDTO();
         Long id = 1L;
         paymentDTO.setId(id);
-        paymentDTO.setAmount(100);
+        paymentDTO.setAmount(BigDecimal.valueOf(100));
         paymentDTO.setCreatedDate(LocalDate.now());
         paymentDTO.setPaidDate(LocalDate.now());
         paymentDTO.setCurrency(Currency.EUR);
         paymentDTO.setPayerEmail(TEST_TEST_COM);
         paymentDTO.setStatus(PaymentStatus.CREATED);
         assertEquals(id, paymentDTO.getId());
-        assertEquals(paymentDTO.getAmount(), 100);
+        assertEquals(paymentDTO.getAmount(), BigDecimal.valueOf(100));
         assertNotNull(paymentDTO.getCreatedDate());
         assertNotNull(paymentDTO.getPaidDate());
         assertEquals(paymentDTO.getCurrency(), Currency.EUR);

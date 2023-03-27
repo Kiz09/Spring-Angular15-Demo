@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class PaymentControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ErrorResponse handlerEception(Exception e){
+    public ErrorResponse handlerException(Exception e){
         return ErrorResponse.builder(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).build();
     }
 

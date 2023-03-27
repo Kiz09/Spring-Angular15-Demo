@@ -4,7 +4,7 @@ import com.prommt.demo.model.Payment;
 import com.prommt.demo.model.dto.PaymentDTO;
 import com.prommt.demo.model.dto.PaymentMapper;
 import com.prommt.demo.repository.PaymentRepository;
-import com.prommt.demo.service.PaymentService;
+import com.prommt.demo.service.impl.PaymentServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,22 +15,22 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/payments")
 public class PaymentController {
 
     PaymentRepository paymentRepository;
 
-    PaymentService paymentService;
+    PaymentServiceImpl paymentServiceImpl;
 
-    public PaymentController(PaymentRepository paymentRepository, PaymentService paymentService) {
+    public PaymentController(PaymentRepository paymentRepository, PaymentServiceImpl paymentServiceImpl) {
         this.paymentRepository = paymentRepository;
-        this.paymentService = paymentService;
+        this.paymentServiceImpl = paymentServiceImpl;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDTO> getPaymentsById(@PathVariable("id") long id){
 
-        Optional<Payment> payment = paymentService.getPaymentById(id);
+        Optional<Payment> payment = paymentServiceImpl.getPaymentById(id);
 
         if(payment.isPresent()){
             return ResponseEntity.ok(PaymentMapper.INSTANCE.paymentToPaymentDTO(payment.get()));
@@ -44,7 +44,7 @@ public class PaymentController {
 
         Payment payment = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
 
-        if(paymentService.createPayment(payment).isPresent()){
+        if(paymentServiceImpl.createPayment(payment).isPresent()){
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }else{
             return ResponseEntity.notFound().build();
@@ -63,7 +63,7 @@ public class PaymentController {
     public ResponseEntity<HttpStatus> updatePayment(@PathVariable long id, @RequestBody PaymentDTO paymentDTO){
 
         Payment paymentToUpdate = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
-        Optional<Payment> payment = paymentService.updatePayment(id, paymentToUpdate);
+        Optional<Payment> payment = paymentServiceImpl.updatePayment(id, paymentToUpdate);
 
         if(payment.isPresent()){
             return ResponseEntity.ok().build();
@@ -76,7 +76,7 @@ public class PaymentController {
     public ResponseEntity<List<PaymentDTO>> getAllPayments(){
 
         List<PaymentDTO> paymentDTOS = new ArrayList<>();
-        List<Payment> payments = paymentService.getAllPayments();
+        List<Payment> payments = paymentServiceImpl.getAllPayments();
 
         if(payments.isEmpty()){
             return ResponseEntity.noContent().build();

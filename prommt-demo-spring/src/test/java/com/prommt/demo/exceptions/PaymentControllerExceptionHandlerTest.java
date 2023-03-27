@@ -17,7 +17,7 @@ class PaymentControllerExceptionHandlerTest {
         PaymentControllerExceptionHandler handler = new PaymentControllerExceptionHandler();
 
         // When
-        ErrorResponse errorResponse = handler.handlerEception(exception);
+        ErrorResponse errorResponse = handler.handlerException(exception);
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, errorResponse.getStatusCode());

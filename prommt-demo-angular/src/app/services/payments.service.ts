@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Payment} from "../models/payment.model";
 
-const baseUrl = 'http://localhost:8080/api';
+const baseUrl = 'http://localhost:8080/payments';
 
 @Injectable({
   providedIn: 'root'

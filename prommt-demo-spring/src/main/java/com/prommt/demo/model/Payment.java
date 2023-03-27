@@ -3,6 +3,7 @@ package com.prommt.demo.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -29,7 +30,7 @@ public class Payment {
     public Currency currency;
 
     @Column(name="amount")
-    public int amount;
+    public BigDecimal amount;
 
     @Column(name="paidDate")
     public LocalDate paidDate;
