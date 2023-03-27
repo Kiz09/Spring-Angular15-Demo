@@ -1,14 +1,14 @@
 
-# SpringPrommtDemo
+# SpringDemo
 
 ## Development server
 
 Inside root folder
    - Run `mvn spring-boot:run`
-   - Navigate to `http://localhost:8080/api/`
+   - Navigate to `http://localhost:8080/payments/`
 
 
-# Angular15PrommtDemo
+# Angular15Demo
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.2.
 
@@ -17,4 +17,4 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 Inside root folder 
 - Run: `npm i`
 - Run: `ng serve --port 8081`
-- Navigate to `http://localhost:8081/all`.
+- Navigate to `http://localhost:8081/payments`.
