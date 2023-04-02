@@ -4,7 +4,7 @@ import { PaymentsListComponent } from './components/payments-list/payments-list.
 
 const routes: Routes = [
   // { path: '', redirectTo: 'payments', pathMatch: 'full' },
-  { path: 'all', component: PaymentsListComponent }
+  { path: 'payments', component: PaymentsListComponent }
 ];
 
 @NgModule({

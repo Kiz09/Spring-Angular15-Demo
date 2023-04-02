@@ -1,18 +1,18 @@
 
-# SpringDemo
+# SpringAngularDemo
 
-## Development server
+## Execute
+
+Inside main folder
+- Run 'docker compose up'
+
+### Development server Spring
 
 Inside root folder
    - Run `mvn spring-boot:run`
    - Navigate to `http://localhost:8080/payments/`
 
-
-# Angular15Demo
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.2.
-
-## Development server
+### Development server Angular
 
 Inside root folder 
 - Run: `npm i`
