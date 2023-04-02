@@ -3,8 +3,7 @@ package com.demo.spring.controller;
 import com.demo.spring.model.Payment;
 import com.demo.spring.model.dto.PaymentDTO;
 import com.demo.spring.model.dto.PaymentMapper;
-import com.demo.spring.repository.PaymentRepository;
-import com.demo.spring.service.impl.PaymentServiceImpl;
+import com.demo.spring.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +17,18 @@ import java.util.Optional;
 @RequestMapping("/payments")
 public class PaymentController {
 
-    PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
-    PaymentServiceImpl paymentServiceImpl;
-
-    public PaymentController(PaymentRepository paymentRepository, PaymentServiceImpl paymentServiceImpl) {
-        this.paymentRepository = paymentRepository;
-        this.paymentServiceImpl = paymentServiceImpl;
+    public PaymentController(PaymentService paymentServiceImpl) {
+        this.paymentService = paymentServiceImpl;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDTO> getPaymentsById(@PathVariable("id") long id){
 
-        Optional<Payment> payment = paymentServiceImpl.getPaymentById(id);
+        Optional<Payment> payment = paymentService.getPaymentById(id);
 
-        if(payment.isPresent()){
-            return ResponseEntity.ok(PaymentMapper.INSTANCE.paymentToPaymentDTO(payment.get()));
-        }else{
-            return ResponseEntity.notFound().build();
-        }
+        return payment.map(value -> ResponseEntity.ok(PaymentMapper.INSTANCE.paymentToPaymentDTO(value))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/")
@@ -44,7 +36,7 @@ public class PaymentController {
 
         Payment payment = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
 
-        if(paymentServiceImpl.createPayment(payment).isPresent()){
+        if(paymentService.createPayment(payment).isPresent()){
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }else{
             return ResponseEntity.notFound().build();
@@ -54,7 +46,7 @@ public class PaymentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deletePayment(@PathVariable("id") long id){
 
-        paymentRepository.deleteById(id);
+        paymentService.deletePayment(id);
         return ResponseEntity.noContent().build();
 
     }
@@ -63,7 +55,7 @@ public class PaymentController {
     public ResponseEntity<HttpStatus> updatePayment(@PathVariable long id, @RequestBody PaymentDTO paymentDTO){
 
         Payment paymentToUpdate = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
-        Optional<Payment> payment = paymentServiceImpl.updatePayment(id, paymentToUpdate);
+        Optional<Payment> payment = paymentService.updatePayment(id, paymentToUpdate);
 
         if(payment.isPresent()){
             return ResponseEntity.ok().build();
@@ -76,7 +68,7 @@ public class PaymentController {
     public ResponseEntity<List<PaymentDTO>> getAllPayments(){
 
         List<PaymentDTO> paymentDTOS = new ArrayList<>();
-        List<Payment> payments = paymentServiceImpl.getAllPayments();
+        List<Payment> payments = paymentService.getAllPayments();
 
         if(payments.isEmpty()){
             return ResponseEntity.noContent().build();

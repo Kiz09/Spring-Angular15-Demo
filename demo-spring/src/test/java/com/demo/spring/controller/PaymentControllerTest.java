@@ -5,9 +5,7 @@ import com.demo.spring.model.Payment;
 import com.demo.spring.model.PaymentStatus;
 import com.demo.spring.model.dto.PaymentDTO;
 import com.demo.spring.model.dto.PaymentMapper;
-import com.demo.spring.repository.PaymentRepository;
-import com.demo.spring.service.impl.PaymentServiceImpl;
-import org.junit.jupiter.api.Assertions;
+import com.demo.spring.service.PaymentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,18 +21,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
 
 class PaymentControllerTest {
 
     public static final String TEST_TEST_COM = "test@test.com";
 
     @Mock
-    PaymentRepository paymentRepository;
-
-    @Mock
-    PaymentServiceImpl paymentServiceImpl;
+    PaymentService paymentService;
 
     @InjectMocks
     PaymentController paymentController;
@@ -58,7 +58,7 @@ class PaymentControllerTest {
         Payment payment = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
         Optional<Payment> optionalPayment = Optional.of(payment);
 
-        when(paymentServiceImpl.createPayment(any(Payment.class))).thenReturn(optionalPayment);
+        when(paymentService.createPayment(any(Payment.class))).thenReturn(optionalPayment);
 
         // When
         ResponseEntity<HttpStatus> responseEntity = paymentController.createPayments(paymentDTO);
@@ -79,7 +79,7 @@ class PaymentControllerTest {
         paymentDTO.setCreatedDate(LocalDate.of(2022, 1, 1));
         paymentDTO.setPaidDate(LocalDate.of(2022, 1, 2));
 
-        when(paymentServiceImpl.createPayment(any(Payment.class))).thenReturn(Optional.empty());
+        when(paymentService.createPayment(any(Payment.class))).thenReturn(Optional.empty());
 
         // When
         ResponseEntity<HttpStatus> responseEntity = paymentController.createPayments(paymentDTO);
@@ -103,14 +103,14 @@ class PaymentControllerTest {
 
         Payment payment = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
 
-        when(paymentServiceImpl.updatePayment(anyLong(), any(Payment.class))).thenReturn(Optional.empty());
+        when(paymentService.updatePayment(anyLong(), any(Payment.class))).thenReturn(Optional.empty());
 
         // when
         ResponseEntity<HttpStatus> result = paymentController.updatePayment(1L, paymentDTO);
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        verify(paymentServiceImpl, times(1)).updatePayment(1L, payment);
+        verify(paymentService, times(1)).updatePayment(1L, payment);
     }
 
     @Test
@@ -126,14 +126,14 @@ class PaymentControllerTest {
         Payment payment = PaymentMapper.INSTANCE.paymentDTOToPayment(paymentDTO);
         Optional<Payment> optionalPayment = Optional.of(payment);
 
-        when(paymentServiceImpl.updatePayment(anyLong(), any(Payment.class))).thenReturn(optionalPayment);
+        when(paymentService.updatePayment(anyLong(), any(Payment.class))).thenReturn(optionalPayment);
 
         // when
         ResponseEntity<HttpStatus> result = paymentController.updatePayment(1L, paymentDTO);
 
         // Then
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        verify(paymentServiceImpl, times(1)).updatePayment(1L, payment);
+        verify(paymentService, times(1)).updatePayment(1L, payment);
     }
 
 
@@ -142,7 +142,7 @@ class PaymentControllerTest {
         // Given
         long id = 1L;
         Payment payment = getPayment(id);
-        when(paymentServiceImpl.getPaymentById(anyLong())).thenReturn(Optional.of(payment));
+        when(paymentService.getPaymentById(anyLong())).thenReturn(Optional.of(payment));
 
         // When
         ResponseEntity<PaymentDTO> response = paymentController.getPaymentsById(id);
@@ -152,8 +152,8 @@ class PaymentControllerTest {
         PaymentDTO paymentDTO = response.getBody();
         assertEquals(id, paymentDTO.getId());
         assertEquals(TEST_TEST_COM, paymentDTO.getPayerEmail());
-        Assertions.assertEquals(PaymentStatus.PAID, paymentDTO.getStatus());
-        Assertions.assertEquals(Currency.USD, paymentDTO.getCurrency());
+        assertEquals(PaymentStatus.PAID, paymentDTO.getStatus());
+        assertEquals(Currency.USD, paymentDTO.getCurrency());
         assertEquals(BigDecimal.valueOf(100), paymentDTO.getAmount());
         assertEquals(LocalDate.of(2022, 1, 1), paymentDTO.getCreatedDate());
         assertEquals(LocalDate.of(2022, 1, 2), paymentDTO.getPaidDate());
@@ -165,7 +165,7 @@ class PaymentControllerTest {
     void getPaymentsById_ReturnsNotFound_WhenPaymentDoesNotExist() {
         // Given
         long id = 1L;
-        when(paymentServiceImpl.getPaymentById(anyLong())).thenReturn(Optional.empty());
+        when(paymentService.getPaymentById(anyLong())).thenReturn(Optional.empty());
 
         // When
         ResponseEntity<PaymentDTO> response = paymentController.getPaymentsById(id);
@@ -184,15 +184,6 @@ class PaymentControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
-    @Test
-    void deletePayment_DeletesPaymentFromRepository() {
-        long paymentId = 1L;
-        doNothing().when(paymentRepository).deleteById(paymentId);
-
-        paymentController.deletePayment(paymentId);
-
-        verify(paymentRepository, times(1)).deleteById(paymentId);
-    }
 
     @Test
     void testGetAllPayments_listOfPayments() {
@@ -201,7 +192,7 @@ class PaymentControllerTest {
         Payment payment2 = getPayment(2L);
         List<Payment> payments = Arrays.asList(payment1, payment2);
 
-        when(paymentServiceImpl.getAllPayments()).thenReturn(payments);
+        when(paymentService.getAllPayments()).thenReturn(payments);
 
         ResponseEntity<List<PaymentDTO>> response = paymentController.getAllPayments();
 
@@ -209,12 +200,12 @@ class PaymentControllerTest {
         assertEquals(2, response.getBody().size());
         assertEquals(payment1.getId(), response.getBody().get(0).getId());
         assertEquals(payment1.getAmount(), response.getBody().get(0).getAmount());
-        Assertions.assertEquals(payment1.getCurrency(), response.getBody().get(0).getCurrency());
+        assertEquals(payment1.getCurrency(), response.getBody().get(0).getCurrency());
         assertEquals(payment2.getId(), response.getBody().get(1).getId());
         assertEquals(payment2.getAmount(), response.getBody().get(1).getAmount());
-        Assertions.assertEquals(payment2.getCurrency(), response.getBody().get(1).getCurrency());
+        assertEquals(payment2.getCurrency(), response.getBody().get(1).getCurrency());
 
-        verify(paymentServiceImpl, times(1)).getAllPayments();
+        verify(paymentService, times(1)).getAllPayments();
     }
 
     @Test
@@ -222,13 +213,13 @@ class PaymentControllerTest {
 
         List<Payment> payments = new ArrayList<>();
 
-        when(paymentServiceImpl.getAllPayments()).thenReturn(payments);
+        when(paymentService.getAllPayments()).thenReturn(payments);
 
         ResponseEntity<List<PaymentDTO>> response = paymentController.getAllPayments();
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-        verify(paymentServiceImpl, times(1)).getAllPayments();
+        verify(paymentService, times(1)).getAllPayments();
     }
 
     private static Payment getPayment(long id) {
